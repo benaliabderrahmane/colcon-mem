@@ -61,7 +61,19 @@ compiler thrashing on swap is far worse than a failed build.
 
 ## Installation
 
-    pip install --user -e .
+    pip install git+https://github.com/benaliabderrahmane/colcon-mem
+
+The extension has to be installed into the same Python environment as colcon
+itself, otherwise its entry point isn't found. If colcon came from a virtual
+environment activate it first; if it came from a distribution package on
+Ubuntu 24.04 or Debian 12 pip refuses to write there unless you pass
+`--break-system-packages`.
+
+Check that it was picked up with:
+
+    colcon extensions colcon_core.executor
+
+which should list `mem` next to `parallel` and `sequential`.
 
 Requires Linux (`/proc/meminfo`).
 

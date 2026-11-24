@@ -22,13 +22,13 @@ than the machine degrades to one package at a time rather than never finishing.
 
 ### Arguments
 
-    --memory-reserve NUMBER     gibibytes to keep available (0 disables)
-    --memory-max NUMBER         gibibytes the build may consume (0 disables)
-    --memory-per-job NUMBER     gibibytes to assume a package needs
-    --memory-settle SECONDS     grace period before a started job is
+    --memory-reserve NUMBER     gibibytes to keep available (0 disables) (default is 0)
+    --memory-max NUMBER         gibibytes the build may consume (0 disables) (default is 0)
+    --memory-per-job NUMBER     gibibytes to assume a package needs (default is 2.0 GiB)
+    --memory-settle SECONDS     grace period before a started job is (default is 20 s)
                                 assumed to be visible in MemAvailable
     --memory-inner-jobs NUMBER  job limit for make, Ninja and cargo
-                                within each package
+                                within each package (default is 0)
 
 All of them can be set in `~/.colcon/defaults.yaml`:
 

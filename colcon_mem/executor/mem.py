@@ -19,9 +19,33 @@ GIB = 1024 ** 3
 
 
 def _meminfo(key):
+    if key in ('MemAvailable', 'MemTotal'):
+        try:
+            with open('/sys/fs/cgroup/memory.max') as h:
+                limit = h.read().strip()
+        except FileNotFoundError:
+            pass
+        except OSError as e:
+            logger.warning(f'Cannot read cgroup memory limit: {e}')
+        else:
+            if limit != 'max':
+                try:
+                    limit_bytes = int(limit)
+                    with open('/sys/fs/cgroup/memory.current') as h:
+                        current_bytes = int(h.read().strip())
+                    if limit_bytes < 0 or current_bytes < 0:
+                        raise ValueError('cgroup memory values must be non-negative')
+                except (OSError, ValueError) as e:
+                    logger.warning(f'Cannot read cgroup memory values: {e}')
+                else:
+                    logger.info(f'Using cgroup memory values: MemTotal={limit_bytes} bytes, MemCurrent={current_bytes} bytes, MemAvailable={limit_bytes - current_bytes} bytes')
+                    if key == 'MemTotal':
+                        return limit_bytes
+                    return max(0, limit_bytes - current_bytes)
     with open('/proc/meminfo') as h:
         for line in h:
             if line.startswith(key + ':'):
+                logger.info(f'Using /proc/meminfo value for {key}: {line.split()[1]} bytes')
                 return int(line.split()[1]) * 1024
     raise RuntimeError(f"'/proc/meminfo' provides no '{key}'")
 
